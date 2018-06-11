@@ -7,7 +7,7 @@
 | 75     | 116.56.136.75 | nn75   | NN active       | hadoop           | 苏德伟 |
 | 76     | 116.56.136.76 | nn76   | NN standby      | hadoop           | 苏德伟 |
 | 77     | 116.56.136.77 | rm77   | RM              | hadoop           | 苏德伟 |
-| 78     | 116.56.136.78 | gw78   | gateway         | hadoop+nfs       | 王明志 |
+| 78     | 116.56.136.78 | gw78   | gateway         | hadoop           | 王明志 |
 | 79     | 116.56.136.79 | sl79   | slave（DN，NM） | hadoop           | 王明志 |
 | 80     | 116.56.136.80 | sl80   | slave（DN，NM） | hadoop           | 王明志 |
 | 81     | 116.56.136.81 | sl81   | slave（DN，NM） | hadoop+zookeeper | 梁功达 |
