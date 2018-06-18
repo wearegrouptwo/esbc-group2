@@ -1,39 +1,31 @@
+import java.io.IOException;
+
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.util.StringUtils;
 
-import java.io.IOException;
 
-public class LogMapper extends Mapper<LongWritable, Text, Text, Log_Message> {
-
-    //拿到日志中的一行数据，并切分成各个字段，，抽取出我们需要的字段
-    //：手机号，上行流量、下行流量  接着封装成k-v发送出去
-
+/**
+ * Created by Handa on 2018/6/17.
+ */
+public class LogMapper extends Mapper<Object,Text,Text,DataBean> {
 
     @Override
-    protected void map(LongWritable key, Text value, Context context)
-            throws IOException, InterruptedException {
-
-
-
-
-        //拿一行数据出来
+    protected void map(Object key, Text value, Context context)
+            throws IOException, InterruptedException{
         String line = value.toString();
-        //切分
-        String[] fields = StringUtils.split(line, ' ');
+        String[] fields = line.split("  ");
+        String id = fields[1];
+        String date= fields[0];
 
-        //取出需要的字段
-        String time = fields[0];
-        int log_status = Integer.parseInt(fields[1]);
-        String uid = fields[2];
+        boolean status;
+        if (fields[2] == "0")
+            status=false;
+        else status=true;
 
-        System.out.println("m-"+time);
-
-        //封装数据并输出
-        context.write(new Text(uid), new Log_Message(time,log_status,uid));
-
-
-
+        context.write(new Text(id),new DataBean(id,date,status));
     }
+
+
 }
