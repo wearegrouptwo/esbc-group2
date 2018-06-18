@@ -12,3 +12,15 @@
 ##### 这次作业的难点在于
 * 能否使用map reduce生成50亿的数据
 * 如何设计生成日志算法，使时间有序，情景合理
+* * *
+##### 关于生成有序日志方法的讨论   by ——zjs
+* 最初的打算是定义字段：登录时间，用户id，登出时间，后经讨论，登入登出应作为两条数据来处理，故此方法不可行。
+* 便又考虑随机生成用户id和登入时间和登出时间，保证随机，但难以保证按时间有序。
+* 因此为方便做差又保证时间有序，我们采取了这样的方案，假定用户按时间均匀分布，时间以毫秒（ms）做最小单位，以时间为序做循环项，随机出用户id和登入登出操作。
+* * *
+##### 关于namenode standby宕机问题的讨论 by ——sdw
+* 跑数据时namenode standby宕机，再次启动时报错java.io.IOException: There appears to be a gap in the edit log.  We expected txid 1, but got txid 162204250.  查看后发现为namenode元数据被破坏，需要修复；
+* 解决方案为恢复namenode数据，在两个namenode上执行命令hadoop namenode -recover即可
+* * *
+#### 关于map的时候提示数组越界问题的讨论 by ——rq
+map的时候提示数组越界，把依赖由通用版本换成cdh的，之后就没出现过了
