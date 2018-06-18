@@ -1,0 +1,133 @@
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+
+
+public class Deal {
+
+
+   public  static  int usrN=8000000;//800万用户
+   public  static  int dateN=315;//生成50亿日志的模拟天数
+    public static double[] usr=new double[usrN];//每个用户每天平均在线时间
+   public  static SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+   public  static String initDateStr="2017-01-01-00:00:00";
+
+    public static class TokenizerMapper
+            extends Mapper<Object, Text, Text, Text> {
+
+
+        private Text word = new Text();
+
+        public void map(Object key, Text value, Context context
+        ) throws IOException, InterruptedException {
+			
+            String log = value.toString();
+            StringTokenizer itr = new StringTokenizer(log,"\n");
+
+            Date date=new Date();
+
+            while (itr.hasMoreTokens()) {
+
+                StringTokenizer tokenizer1=new StringTokenizer(itr.nextToken());//分割日志
+                String dateTime=tokenizer1.nextToken();
+                String state=tokenizer1.nextToken();
+                String id=tokenizer1.nextToken();
+
+                try {
+                    date=format.parse(dateTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                int usrstate=Integer.valueOf(state);
+
+                String timedot;
+
+                if(usrstate==0)
+                { timedot=String.valueOf((double)date.getTime()/(1000*60*60));}
+                else{
+                    timedot=String.valueOf((double)date.getTime()/(-1000*60*60));
+                }
+               
+                word=new Text(id);
+                context.write(word,new  Text(timedot));
+
+              
+
+            }
+        }
+    }
+    public static class IntSumReducer
+            extends Reducer<Text,  Text, Text,  Text> {
+
+
+        public void reduce(Text key, Iterable<Text> values,
+                           Context context
+        ) throws IOException, InterruptedException {
+
+
+
+
+           double timeDot=0.0;
+           double sum=0.0;
+
+          for( Text val:values)
+          {
+
+            timeDot= Double.valueOf(val.toString());
+            sum=sum+timeDot;
+              
+
+          }
+
+            double spendTime=sum/dateN;//每个用户每天在线时间计算
+            int index=Integer.parseInt(key.toString());
+            usr[index]=spendTime;
+            context.write(key,new Text(String.valueOf(spendTime)));
+
+
+
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf, "dealLog");
+        job.setJarByClass(Deal.class);
+        job.setMapperClass(TokenizerMapper.class);
+        job.setCombinerClass(IntSumReducer.class);
+        job.setReducerClass(IntSumReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        boolean success=  job.waitForCompletion(true);
+
+        double average=0.0;
+        if(success==true)
+        {   for(int i=0;i<usrN;i++)
+            {average=average+usr[i];//800万用户平均每天在线时间的总和。
+            
+			}
+        }
+        average=average/usrN;//
+      
+    }
+}
