@@ -1,0 +1,12 @@
+例如java内存泄漏的小程序片段
+
+Vector v=new Vector();
+2 for (int i=1;i<10; i++){
+3 Object o=new Object();
+4 v.add(o);
+5 o=null;
+6 }
+
+分析：for循环10次，把10个object引用放到vector数组中存放，但是每次进行add操作后，o对象应用设置为null,
+导致o引用无法找到原来指向的对象，所以当遍历vector数组时，由于vector数组存放的引用都是null无法找到原来所指
+的对象，从而导致内存所创建10个object对象无法再通过引用来访问他们。
