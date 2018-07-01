@@ -1,4 +1,4 @@
-import java.io.*;
+﻿import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -104,7 +104,7 @@ public class log_generater {
     //main函数
     public static void main(String[] args) throws IOException {
         //输出文件，以及输出格式
-        String file_output = "/usr/local/flume/log_test";
+        String file_output = "/usr/local/flume/log_test_ray";
         String charSet = "UTF-8";
         FileOutputStream stream_ouput = new FileOutputStream(file_output);
         OutputStreamWriter writer= new OutputStreamWriter(stream_ouput, charSet);
