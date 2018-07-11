@@ -2,8 +2,8 @@
   上限：3.2万条/秒
 
 二.基本概念：<br>
-  *1.Batch:<br>
-    *Spark Streaming是以batch的形式进行处理的，batch的划分根据“处理间隔”，这个是由用户设定的。<br>
+-1.Batch:<br>
+    - Spark Streaming是以batch的形式进行处理的，batch的划分根据“处理间隔”，这个是由用户设定的。<br>
     *Batch分为提交和处理两个步骤;<br>
   2.处理间隔：<br>
     初始化的时候，StreamingContext(sc, 处理间隔)。<br>
