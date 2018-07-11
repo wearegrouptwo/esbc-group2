@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="https://static.jianshukeji.com/highcharts/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+
+    </style>
+
+    <script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+    <script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+    <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+</head>
+
+<body>
+    <div id="container" style="min-width:400px;height:400px"></div>
+    <script>
+        
+        
+        
+    
+        var websocket = null;
+        var my = 5;
+
+        /*
+        setInterval(function() {
+            var x = (new Date()).getTime(); // 当前时间
+            this.Isend(1);
+        }, 1000);
+        */
+
+
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            // websocket = new WebSocket("ws://localhost:8080/testUV");
+            websocket = new WebSocket("ws://116.56.136.73:8181");
+        } else {
+            alert('Not support websocket');
+        }
+
+        //连接发生错误的回调方法
+        websocket.onerror = function() {
+            console.log("error");
+        };
+
+        //连接成功建立的回调方法
+        websocket.onopen = function(event) {
+            console.log("open");
+        };
+
+        //接收到消息的回调方法
+        websocket.onmessage = function(event) {
+
+            console.log('收到数据', event.data);
+
+            data = event.data;
+            data = data.split("<split>")
+            console.log(data[2]);
+            //_this.uid = data[0];
+            //_this.sign = data[1];
+            //text = data[2];
+            /*
+            if(text!='SETUID') {  
+                _this.onData(text);
+            } else {
+                _this.onRegist()
+            }
+            */
+
+
+            my = data[2];
+            console.log('my', my);
+        };
+
+        //连接关闭的回调方法
+        websocket.onclose = function() {
+            console.log("close");
+        };
+
+        
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function() {
+            websocket.close();
+        };
+
+        function closeWebSocket() {
+            websocket.close();
+        }
+
+
+
+
+        // JS 代码 
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
+
+        function activeLastPointToolip(chart) {
+            var points = chart.series[0].points;
+            chart.tooltip.refresh(points[points.length - 1]);
+        }
+        var chart = Highcharts.chart('container', {
+            chart: {
+                type: 'spline',
+                marginRight: 10,
+                events: {
+                    load: function() {
+                        var series = this.series[0],
+                            chart = this;
+                        activeLastPointToolip(chart);
+                        setInterval(function() {
+                            var x = (new Date()).getTime(); // 当前时间
+                            //y =7; //Math.random();          // 随机值
+                            let ny = my;
+                            console.log('nnny', ny);
+                            series.addPoint([x, parseInt(ny)], true, true);
+                            activeLastPointToolip(chart);
+                        }, 1000);
+                    }
+                }
+            },
+            title: {
+                text: '实时uv数据'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: null
+                }
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            series: [{
+                name: 'uv',
+                data: (function() {
+                    // 生成随机值
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+                    for (i = -19; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: Math.random()
+                        });
+                    }
+                    return data;
+                }())
+            }]
+        });
+
+    </script>
+</body>
+
+</html>
