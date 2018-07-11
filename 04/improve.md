@@ -24,11 +24,11 @@
 		spark.executor.memory		2g
 		spark.driver.memory		4g
 #
-<br>一般对于spark.streaming.kafka.maxRatePerPartition，这个参数 × topic的partition略大于Input Rate较好）		
+<br>(一般对于spark.streaming.kafka.maxRatePerPartition，这个参数 × topic的partition略大于Input Rate较好)		
 #
 		spark.streaming.kafka.maxRatePerPartition 	22500
 #
 
 - 对于kafka:
 	- 新建topic，将partition设定为2。
-<br>我尝试过设定partirion为4，效果非常差，而且情况非常奇怪，Input Rate为0都会炸掉。
+<br>(我尝试过设定partirion为4，效果非常差，而且情况非常奇怪，Input Rate为0都会炸掉)
