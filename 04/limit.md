@@ -1,6 +1,7 @@
 一.测试出的上限<br>
-  上限：3.2万条/秒
 - lambda 架构
+  上限：3.2万条/秒
+
 二.基本概念：<br>
 -1.Batch:<br>
     - Spark Streaming是以batch的形式进行处理的，batch的划分根据“处理间隔”，这个是由用户设定的。<br>
